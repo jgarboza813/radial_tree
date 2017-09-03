@@ -10,6 +10,10 @@
   font: 10px sans-serif;
 }
 
+a:hover {
+    fill: red;
+}
+
 .node--internal circle {
   fill: #555;
 }
@@ -22,7 +26,7 @@
   fill: none;
   stroke: #555;
   stroke-opacity: 0.4;
-  stroke-width: 1.5px;
+  stroke-width: 1.0px;
 }
 
 </style>
@@ -39,10 +43,10 @@ var stratify = d3.stratify()
     .parentId(function(d) { return d.id.substring(0, d.id.lastIndexOf(".")); });
 
 var tree = d3.tree()
-    .size([2 * Math.PI, 500])
+    .size([2 * Math.PI, 350])
     .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
 
-d3.csv("/Users/jgarboza/Repos/radial_tree/flare.csv", function(error, data) {
+d3.csv("flare.csv", function(error, data) {
   if (error) throw error;
 
   var root = tree(stratify(data));
@@ -62,14 +66,16 @@ d3.csv("/Users/jgarboza/Repos/radial_tree/flare.csv", function(error, data) {
       .attr("transform", function(d) { return "translate(" + radialPoint(d.x, d.y) + ")"; });
 
   node.append("circle")
-      .attr("r", 2.5);
+      .attr("r", 3.0);   // size of the circles (nodes)
 
-  node.append("text")
+  node.append("a").attr("xlink:href", function(d){ return "http://en.wikipedia.org/wiki" })
+      .append("text")
       .attr("dy", "0.31em")
       .attr("x", function(d) { return d.x < Math.PI === !d.children ? 6 : -6; })
       .attr("text-anchor", function(d) { return d.x < Math.PI === !d.children ? "start" : "end"; })
       .attr("transform", function(d) { return "rotate(" + (d.x < Math.PI ? d.x - Math.PI / 2 : d.x + Math.PI / 2) * 180 / Math.PI + ")"; })
       .text(function(d) { return d.id.substring(d.id.lastIndexOf(".") + 1); });
+
 });
 
 function radialPoint(x, y) {
@@ -77,3 +83,5 @@ function radialPoint(x, y) {
 }
 
 </script>
+
+</html>
